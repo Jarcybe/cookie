@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galleta</title>
+    <link rel="stylesheet" href="static/css/cookie.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #backgroundCanvas, #cookieCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #cookieCanvas {
+            margin: auto;
+            display: block;
+            position: relative;
+            z-index: 2;
+        }
+
+        #backgroundCanvas {
+            z-index: 1;
+        }
+
+        .galleta {
+            width: 100px;
+            cursor: pointer;
+            transition: transform 0.6s;
+            position: relative;
+            z-index: 2;
+        }
+
+        .galleta:hover {
+            transform: scale(1.1);
+        }
+
+        #cookieCount {
+            position: absolute;
+            top: 550px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'MiFuente';
+            color: #000000;
+            font-size: 50px;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .counters {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            z-index: 2;
+        }
+
+        .counter {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-right: 20px;
+        }
+
+        .counter img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .counter span {
+            font-size: 24px;
+            color: #000;
+        }
+
+        @font-face {
+            font-family: 'MiFuente';
+            src: url('/static/fonts/u-4n0qyriQwlOrhSvowK_l52_wFZWMf6.woff2') format('woff2');
+        }
+    
+
+
+
+        #panel {
+            display: none;
+            width: 300px;
+            background-color: #f0f0f0;
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            z-index: 3; 
+        }
+
+        #boton {
+            cursor: pointer;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            z-index: 2; 
+        }
+
+    </style>
+
+    <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+    <script src="{{ url_for('static', filename='js/clicker.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.3/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+
+
+</head>
+<body>
+
+    <canvas id="backgroundCanvas" width="1920" height="1080"></canvas>
+    <canvas id="cookieCanvas" width="300" height="300"></canvas>
+
+    <div id="cookieCount">{{ contador_principal }} cookies</div>
+
+  
+
+   
+
+
+    <button id="boton" style="position: absolute; top: 10px; left: 10px;">tienda</button>
+
+    <div id="panel" style="display: none;">
+       
+        <form>
+            
+        </form>
+    
+        <button id="skin1" onclick="handleSkinClick('skin1')">Skin 1</button>
+        <button id="skin2" onclick="handleSkinClick('skin2')">Skin 2</button>
+        <button id="skin3" onclick="handleSkinClick('skin3')">Skin 3</button>
+    </div>
+
+    <div id="ganasteMessage" style="display: none;">¡Ganaste!</div>
+    
+    <script>
+        
+        function setClickValues(clicks) {
+            
+            var dobleClickValue = 1000;
+            var tripleClickValue = 5000;
+    
+            
+            if (clicks === 2) {
+                
+                console.log("Doble Click: " + dobleClickValue);
+            } else if (clicks === 3) {
+                
+                console.log("Triple Click: " + tripleClickValue);
+            }
+        }
+        
+        
+
+        
+        var boton = document.getElementById("boton");
+        var panel = document.getElementById("panel");
+    
+        
+        boton.addEventListener("click", function () {
+            
+            panel.style.display = (panel.style.display === "block") ? "none" : "block";
+        });
+    </script>
+
+    
+   
+<script>
+ function handleDoubleClick() {
+        
+        fetch('/restarGalletas', {
+            method: 'POST',
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log(data.message);
+            } else {
+                
+                window.alert(data.message);
+                console.error(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error al restar galletas: ', error);
+        });
+    }
+
+</script>
+    
+<script>
+    function handleTripleClick() {
+        
+        fetch('/restarTripleClick', {
+            method: 'POST',
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);  
+
+            if (data.success) {
+                console.log(data.message);
+            } else {
+                
+                window.alert(data.message);
+                console.error(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error al restar galletas: ', error);
+        });
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+    <script>
+        const socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        const backgroundCanvas = document.getElementById("backgroundCanvas");
+        const backgroundStage = new createjs.Stage(backgroundCanvas);
+
+        const cookieCanvas = document.getElementById("cookieCanvas");
+        const cookieStage = new createjs.Stage(cookieCanvas);
+
+        const cookie = new createjs.Bitmap("static/img/perfectCookie.png");
+        cookie.addEventListener("click", clickCookie);
+        cookieStage.addChild(cookie);
+
+        const backgroundImg = new Image();
+        backgroundImg.src = "static/img/blue.png";
+
+
+        
+        const generacionFrecuencia = 5000;
+
+      
+        
+        function createRandomObject() {
+    const randomObject = new createjs.Bitmap("static/img/mosca.png");
+
+    
+    const angle = Math.random() * Math.PI * 2;
+    const distance = Math.random() * 800 + 600; 
+    randomObject.x = window.innerWidth / 2 + Math.cos(angle) * distance;
+    randomObject.y = window.innerHeight / 2 + Math.sin(angle) * distance;
+
+    backgroundStage.addChild(randomObject);
+
+    
+    let clickeado = false;
+
+    
+    randomObject.addEventListener("click", function () {
+        
+        if (!clickeado) {
+            
+            clickeado = true;
+            playRandomSound();
+
+           
+            socket.emit('manejar_contador', { x: randomObject.x, y: randomObject.y });
+
+           
+            backgroundStage.removeChild(randomObject);
+        }
+    });
+
+    createjs.Tween.get(randomObject).to({ x: window.innerWidth / 2, y: window.innerHeight / 2 }, 3000).call(() => {
+       
+        if (!clickeado && isCloseToCenter(randomObject, 150)) {
+            socket.emit('restar_contador', { puntos: 10 });
+        }
+
+        
+        backgroundStage.removeChild(randomObject);
+    });
+
+    createjs.Ticker.on("tick", () => {
+        if (isCollision(randomObject, cookie) || isCloseToCenter(randomObject, 150)) {
+           
+            backgroundStage.removeChild(randomObject);
+        }
+    });
+}
+
+
+        setInterval(createRandomObject, generacionFrecuencia);
+
+        function isCollision(obj1, obj2) {
+            return obj1.x < obj2.x + obj2.image.width &&
+                obj1.x + obj1.graphics.command.w > obj2.x &&
+                obj1.y < obj2.y + obj2.image.height &&
+                obj1.y + obj1.graphics.command.h > obj2.y;
+        }
+
+        function isCloseToCenter(obj, distance) {
+            const center_x = window.innerWidth / 2;
+            const center_y = window.innerHeight / 2;
+            const objDistance = Math.sqrt(Math.pow(obj.x - center_x, 2) + Math.pow(obj.y - center_y, 2));
+            return objDistance <= distance;
+        }
+
+    
+       
+        socket.on('update_contador', (data) => {
+            document.getElementById("cookieCount").innerText = data.contador_principal + ' cookies';
+        });
+
+        createjs.Ticker.on("tick", backgroundStage);
+        createjs.Ticker.on("tick", cookieStage);
+
+
+
+
+        createjs.Tween.get(cookie, { loop: true })
+    .to({ scaleX: 0.8, scaleY: 0.8 }, 5000, createjs.Ease.quadInOut) 
+    .to({ scaleX: 1, scaleY: 1 }, 5000, createjs.Ease.quadInOut); 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    const sounds = [
+    'static/sounds/clickb1.mp3',
+    'static/sounds/clickb2.mp3',
+    'static/sounds/clickb3.mp3',
+    'static/sounds/clickb4.mp3',
+    'static/sounds/clickb5.mp3',
+    'static/sounds/clickb6.mp3',
+    'static/sounds/clickb7.mp3',
+    
+    ];
+
+    let clickCounter = 0;
+    let currentSoundIndex = 0;
+
+   
+    const clickSounds = sounds.map(sound => new Howl({
+    src: [sound],
+    volume: 0.5,
+    }));
+    
+
+
+    function clickCookie() {
+    fetch('/aumentarContador', {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        cookies = data.contador_principal;
+        updateCookiesDisplay();
+        
+       
+        clickCounter++;
+
+       
+        if (clickCounter % 5 === 0) {
+         
+            currentSoundIndex = Math.floor(Math.random() * sounds.length);
+        }
+
+        
+        clickSounds[currentSoundIndex].play();
+    })
+    .catch(error => {
+        console.error('Error al aumentar el contador: ', error);
+    });
+}
+
+
+
+
+function playRandomSound() {
+    const sounds = [
+        'static/sounds/tillb1.mp3',
+        'static/sounds/tillb2.mp3',
+        'static/sounds/tillb3.mp3'
+    ];
+
+    const randomIndex = Math.floor(Math.random() * sounds.length);
+    const volume = 0.1;
+
+    const sound = new Howl({
+        src: [sounds[randomIndex]]
+    });
+
+    sound.play();
+}
+
+
+
+const backgroundSongURL = 'static/sounds/fondo.mp3';
+
+
+const backgroundSong = new Howl({
+    src: [backgroundSongURL],
+    loop: true, 
+    volume: 0.1 
+});
+
+
+backgroundSong.play();
+
+
+
+
+
+
+
+    </script>
+</body>
+</html>

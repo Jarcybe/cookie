@@ -1,0 +1,249 @@
+
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-image: url('/static/img/Blue.png'); 
+  position: relative;
+}
+
+body.skin1 {
+  background-image: url('/static/img/Blue.png');
+}
+
+
+body.skin2 {
+  background-image: url('/static/img/fondo2.jpg');
+}
+
+
+body.skin3 {
+  background-image: url('/static/img/fondo3.jpg');
+}
+
+
+.galleta {
+  width: 100px;
+  cursor: pointer;
+  transition: transform 0.6s;
+}
+
+.galleta:hover {
+  transform: scale(1.1);
+}
+
+#cookieCount {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  font-family: 'MiFuente';
+  color: #000000;
+  font-size: 20px;
+}
+
+
+
+.counters {
+  position: absolute;
+  bottom: 1px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+
+.counter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.counter-icon {
+  width: 50px;
+  height: 50px;
+}
+
+.count {
+  font-size: 24px;
+  color: #000;
+}
+
+
+
+.oculto {
+  display: none;
+}
+
+
+
+#userButtons {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+#showLoginButton,
+#showRegisterButton {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+
+
+
+
+.menu {
+  display: none;
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+  animation-duration: 0.3s;
+  animation-fill-mode: both;
+}
+
+.menu.active {
+  display: block;
+  animation-name: slide-down;
+}
+
+@keyframes slide-down {
+  from {
+      transform: translateY(-10px);
+      opacity: 0;
+  }
+  to {
+      transform: translateY(0);
+      opacity: 1;
+  }
+}
+
+
+
+#registerForm {
+    display: none; 
+    background-color: #f0f0f0; 
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px; 
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); 
+}
+
+#registerForm h2 {
+    font-size: 24px; 
+    margin: 0 0 20px; 
+    color: #007bff; 
+}
+
+#registerForm label {
+    display: block; 
+    font-size: 16px; 
+    margin: 0 0 10px; 
+    color: #333; 
+}
+
+#registerForm input {
+    width: 100%; 
+    padding: 10px; 
+    margin: 0 0 20px; 
+    border: 1px solid #ccc; 
+    border-radius: 3px; 
+}
+
+#registerForm button {
+    background: #007bff; 
+    color: #fff; 
+    border: none; 
+    padding: 10px 20px; 
+    cursor: pointer; 
+    border-radius: 3px; 
+}
+
+#registerForm button:hover {
+    background: #0056b3; 
+}
+
+
+#registerForm .closeButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #999;
+}
+
+#registerForm .closeButton:hover {
+    color: #333;
+}
+
+
+
+#loginForm {
+  display: none; 
+  background-color: #f0f0f0; 
+  padding: 20px; 
+  border: 1px solid #ccc; 
+  border-radius: 5px; 
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); 
+}
+
+#loginForm h2 {
+  font-size: 24px; 
+  margin: 0 0 20px; 
+  color: #007bff; 
+}
+
+#loginForm label {
+  display: block; 
+  font-size: 16px; 
+  margin: 0 0 10px; 
+  color: #333; 
+}
+
+#loginForm input {
+  width: 100%; 
+  padding: 10px; 
+  margin: 0 0 20px; 
+  border: 1px solid #ccc; 
+  border-radius: 3px; 
+}
+
+#loginForm button {
+  background: #007bff; 
+  color: #fff; 
+  border: none; 
+  padding: 10px 20px; 
+  cursor: pointer; 
+  border-radius: 3px; 
+}
+
+#loginForm button:hover {
+  background: #0056b3; 
+}
+
+
+#loginForm .closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 20px;
+  cursor: pointer;
+  color: #999;
+}
+
+#loginForm .closeButton:hover {
+  color: #333;
+}
